@@ -12,6 +12,8 @@
   (:require [clojure.test :refer [deftest is testing]]
             [langgraph.graph :as g]
             [hospitalityops.store :as store]
+            [hospitalityops.governor :as governor]
+            [hospitalityops.hospitalityopsllm :as llm]
             [hospitalityops.operation :as op]))
 
 (defn- fresh []
@@ -169,3 +171,68 @@
       (exec-op actor "b" {:op :jurisdiction/assess :subject "stay-1" :no-spec? true} operator)
       (is (= 2 (count (store/ledger db)))
           "one commit + one hold, both recorded"))))
+
+;; ---------------------------------------------------------------------------
+;; A room cannot hold two guests at once
+;; ---------------------------------------------------------------------------
+
+(defn- with-occupant
+  "Seed a second stay in the SAME property/room as `base-id`, already
+  checked in over `in`..`out`."
+  [db base-id in out]
+  (let [base (store/stay db base-id)]
+    (store/with-stays db
+      (assoc (:stays (store/demo-data))
+             "stay-occupant" (assoc base :id "stay-occupant"
+                                    :check-in-date in :check-out-date out
+                                    :checked-in? true :checked-out? false)))
+    db))
+
+(defn- checkin-verdict [db subject]
+  (let [req {:op :stay/check-in :subject subject}]
+    (governor/check req {:actor-id "op-1"} (llm/infer db req) db)))
+
+(deftest a-room-already-occupied-cannot-be-checked-into
+  (testing "already-checked-in-violations only refused the SAME stay twice;
+            two DIFFERENT stays could occupy one room at once and both
+            recorded clean"
+    (let [db (with-occupant (store/seed-db) "stay-1" "2026-09-01" "2026-09-03")
+          v (checkin-verdict db "stay-1")]
+      (is (some #{:room-double-booked} (map :rule (:violations v))))
+      (is (:hard? v) "a double-booked room is never merely an escalation"))))
+
+(deftest a-non-overlapping-stay-in-the-same-room-is-fine
+  (testing "half-open: an occupant leaving on the 3rd frees the room on the 3rd"
+    (let [db (with-occupant (store/seed-db) "stay-1" "2026-08-20" "2026-09-01")
+          v (checkin-verdict db "stay-1")]
+      (is (not (some #{:room-double-booked} (map :rule (:violations v))))))))
+
+(deftest a-checked-out-occupant-does-not-block-the-room
+  (let [db (store/seed-db)
+        base (store/stay db "stay-1")]
+    (store/with-stays db (assoc (:stays (store/demo-data))
+                                "stay-occupant" (assoc base :id "stay-occupant"
+                                                       :checked-in? true :checked-out? true)))
+    (is (not (some #{:room-double-booked}
+                   (map :rule (:violations (checkin-verdict db "stay-1"))))))))
+
+(deftest an-occupant-whose-dates-are-unknown-blocks-rather-than-passes
+  (testing "un-verifiable is not the same as free"
+    (let [db (store/seed-db)
+          base (store/stay db "stay-1")]
+      (store/with-stays db (assoc (:stays (store/demo-data))
+                                  "stay-occupant" (-> base
+                                                      (assoc :id "stay-occupant"
+                                                             :checked-in? true :checked-out? false)
+                                                      (dissoc :check-in-date :check-out-date))))
+      (is (some #{:room-double-booked}
+                (map :rule (:violations (checkin-verdict db "stay-1"))))))))
+
+(deftest a-different-room-in-the-same-property-is-unaffected
+  (let [db (store/seed-db)
+        base (store/stay db "stay-1")]
+    (store/with-stays db (assoc (:stays (store/demo-data))
+                                "stay-occupant" (assoc base :id "stay-occupant" :room "999"
+                                                       :checked-in? true :checked-out? false)))
+    (is (not (some #{:room-double-booked}
+                   (map :rule (:violations (checkin-verdict db "stay-1"))))))))
