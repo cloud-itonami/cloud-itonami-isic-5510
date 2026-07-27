@@ -59,37 +59,43 @@
   []
   {:stays
    {"stay-1" {:id "stay-1" :property "Kita Inn" :room "101"
-              :nights 2 :rate 100.0 :claimed-total 200.0
+              :check-in-date "2026-09-01" :check-out-date "2026-09-03"
+              :nights 2 :rate 10000 :claimed-total 20000 :currency "USD"
               :guest-id-verified? true
               :disclosure-requested? false :disclosure-authorized? false
               :checked-in? false :checked-out? false
               :jurisdiction "JPN" :status :intake}
     "stay-2" {:id "stay-2" :property "Atlantis Inn" :room "201"
-              :nights 1 :rate 100.0 :claimed-total 100.0
+              :check-in-date "2026-09-01" :check-out-date "2026-09-02"
+              :nights 1 :rate 10000 :claimed-total 10000 :currency "USD"
               :guest-id-verified? true
               :disclosure-requested? false :disclosure-authorized? false
               :checked-in? false :checked-out? false
               :jurisdiction "ATL" :status :intake}
     "stay-3" {:id "stay-3" :property "Minami Inn" :room "301"
-              :nights 3 :rate 100.0 :claimed-total 350.0
+              :check-in-date "2026-09-01" :check-out-date "2026-09-04"
+              :nights 3 :rate 10000 :claimed-total 35000 :currency "USD"
               :guest-id-verified? true
               :disclosure-requested? false :disclosure-authorized? false
               :checked-in? false :checked-out? false
               :jurisdiction "JPN" :status :intake}
     "stay-4" {:id "stay-4" :property "Higashi Inn" :room "401"
-              :nights 2 :rate 120.0 :claimed-total 240.0
+              :check-in-date "2026-09-01" :check-out-date "2026-09-03"
+              :nights 2 :rate 12000 :claimed-total 24000 :currency "USD"
               :guest-id-verified? false
               :disclosure-requested? false :disclosure-authorized? false
               :checked-in? false :checked-out? false
               :jurisdiction "JPN" :status :intake}
     "stay-5" {:id "stay-5" :property "Nishi Inn" :room "501"
-              :nights 2 :rate 90.0 :claimed-total 180.0
+              :check-in-date "2026-09-01" :check-out-date "2026-09-03"
+              :nights 2 :rate 9000 :claimed-total 18000 :currency "USD"
               :guest-id-verified? true
               :disclosure-requested? true :disclosure-authorized? false
               :checked-in? false :checked-out? false
               :jurisdiction "JPN" :status :intake}
     "stay-6" {:id "stay-6" :property "Chuo Inn" :room "601"
-              :nights 4 :rate 110.0 :claimed-total 440.0
+              :check-in-date "2026-09-01" :check-out-date "2026-09-05"
+              :nights 4 :rate 11000 :claimed-total 44000 :currency "USD"
               :guest-id-verified? true
               :disclosure-requested? true :disclosure-authorized? true
               :checked-in? false :checked-out? false
@@ -198,6 +204,7 @@
 (defn- dec* [s] (when s (edn/read-string s)))
 
 (defn- stay->tx [{:keys [id property room nights rate claimed-total
+                        check-in-date check-out-date currency
                          guest-id-verified?
                          disclosure-requested? disclosure-authorized?
                          checked-in? checked-out?
@@ -208,6 +215,9 @@
     nights                                               (assoc :stay/nights nights)
     rate                                                    (assoc :stay/rate rate)
     claimed-total                                              (assoc :stay/claimed-total claimed-total)
+    check-in-date                                                (assoc :stay/check-in-date check-in-date)
+    check-out-date                                                 (assoc :stay/check-out-date check-out-date)
+    currency                                                         (assoc :stay/currency currency)
     (some? guest-id-verified?)                                    (assoc :stay/guest-id-verified? guest-id-verified?)
     (some? disclosure-requested?)                                    (assoc :stay/disclosure-requested? disclosure-requested?)
     (some? disclosure-authorized?)                                      (assoc :stay/disclosure-authorized? disclosure-authorized?)
@@ -220,6 +230,7 @@
 
 (def ^:private stay-pull
   [:stay/id :stay/property :stay/room :stay/nights :stay/rate :stay/claimed-total
+   :stay/check-in-date :stay/check-out-date :stay/currency
    :stay/guest-id-verified? :stay/disclosure-requested? :stay/disclosure-authorized?
    :stay/checked-in? :stay/checked-out?
    :stay/jurisdiction :stay/status :stay/check-in-number :stay/check-out-number])
@@ -233,7 +244,9 @@
      :disclosure-authorized? (boolean (:stay/disclosure-authorized? m))
      :checked-in? (boolean (:stay/checked-in? m)) :checked-out? (boolean (:stay/checked-out? m))
      :jurisdiction (:stay/jurisdiction m) :status (:stay/status m)
-     :check-in-number (:stay/check-in-number m) :check-out-number (:stay/check-out-number m)}))
+     :check-in-number (:stay/check-in-number m) :check-out-number (:stay/check-out-number m)
+     :check-in-date (:stay/check-in-date m) :check-out-date (:stay/check-out-date m)
+     :currency (:stay/currency m)}))
 
 (defrecord DatomicStore [conn]
   Store

@@ -7,7 +7,15 @@
  ;; paths only resolve inside the monorepo checkout — a standalone fork
  ;; should override them with git coordinates.
  :deps {io.github.kotoba-lang/langgraph
-        {:local/root "../../kotoba-lang/langgraph"}}
+        {:local/root "../../kotoba-lang/langgraph"}
+        ;; the folio recompute runs on kotoba.reservation's integer money.
+        ;; It used to be `(* (double nights) (double rate))` compared with
+        ;; `==`, which REJECTED ~19% of correct folios at realistic nightly
+        ;; rates (measured: 131,494 of 686,000 combinations of 1-14 nights
+        ;; x $10.00-$499.99) because the product is not representable as a
+        ;; double. A guest was told their own correct total did not match.
+        io.github.kotoba-lang/reservation
+        {:local/root "../../kotoba-lang/reservation"}}
  :aliases
  {;; offline workspace dev -- pin transitive langchain to local checkout
   :dev {:override-deps

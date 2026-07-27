@@ -38,6 +38,32 @@ it) -- a fresh, independent build.
 > independent **Hospitality Governor**, a human **approval workflow**,
 > and an immutable **audit ledger**.
 
+## The folio recompute runs on integer money
+
+`hospitalityops.registry/folio-total-matches-claim?` is a ground-truth
+recompute of a stay's own total. It used to compute
+`(* (double nights) (double rate))` and compare with `==`.
+
+That is not a rounding nicety. At realistic nightly rates the product of
+two doubles is routinely not the double nearest the true total, so the
+check **rejected correct folios** — measured on this repository's own
+function, **131,494 of 686,000** combinations of 1–14 nights x $10.00 to
+$499.99. A guest presenting their own correct total was told it did not
+match.
+
+Money is now integer minor units (JPY: 1 = ¥1; USD: 1 = 1 cent) and the
+recompute runs through
+[`kotoba.reservation`](https://github.com/kotoba-lang/reservation),
+which is integer-only precisely so this class of failure cannot occur.
+`registry_test.clj` re-runs the sweep that found those 131,494 false
+rejections and asserts it now finds none.
+
+Nights are derived from the stay's own `:check-in-date`/`:check-out-date`
+when it has them, falling back to the recorded `:nights` count — a stay
+recording `:nights 2` for a five-night range is billed for five. A stay
+that cannot be recomputed **never matches**: un-verifiable is not the
+same as correct.
+
 ## Scope: what this actor does and does not do
 
 This actor covers stay intake through accommodation-operations/guest-

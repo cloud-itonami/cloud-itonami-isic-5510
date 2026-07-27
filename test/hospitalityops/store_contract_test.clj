@@ -15,10 +15,10 @@
   (doseq [[label s] (backends)]
     (testing label
       (is (= "JPN" (:jurisdiction (store/stay s "stay-1"))))
-      (is (= 200.0 (:claimed-total (store/stay s "stay-1"))))
+      (is (= 20000 (:claimed-total (store/stay s "stay-1"))))
       (is (true? (:guest-id-verified? (store/stay s "stay-1"))))
       (is (false? (:disclosure-requested? (store/stay s "stay-1"))))
-      (is (= 350.0 (:claimed-total (store/stay s "stay-3"))))
+      (is (= 35000 (:claimed-total (store/stay s "stay-3"))))
       (is (false? (:guest-id-verified? (store/stay s "stay-4"))))
       (is (true? (:disclosure-requested? (store/stay s "stay-5"))))
       (is (false? (:disclosure-authorized? (store/stay s "stay-5"))))
@@ -43,7 +43,7 @@
         (store/commit-record! s {:effect :stay/upsert
                                  :value {:id "stay-1" :property "Kita Inn"}})
         (is (= "Kita Inn" (:property (store/stay s "stay-1"))))
-        (is (= 200.0 (:claimed-total (store/stay s "stay-1"))) "unrelated field preserved"))
+        (is (= 20000 (:claimed-total (store/stay s "stay-1"))) "unrelated field preserved"))
       (testing "assessment payloads commit and read back"
         (store/commit-record! s {:effect :assessment/set :path ["stay-1"]
                                  :payload {:jurisdiction "JPN" :checklist ["a" "b"]}})

@@ -6,7 +6,7 @@
  :itonami.blueprint/social-impact [:tourism-access :worker-safety :local-economy]
  :itonami.blueprint/governor :hospitality-governor
  :itonami.blueprint/robotics true
- :itonami.blueprint/required-technologies [:robotics :identity :forms :dmn :bpmn :audit-ledger]
+ :itonami.blueprint/required-technologies [:reservation :robotics :identity :forms :dmn :bpmn :audit-ledger]
  :itonami.blueprint/optional-technologies [:optimization]
  :itonami.blueprint/status :public-oss
  :itonami.blueprint/maturity :implemented}
