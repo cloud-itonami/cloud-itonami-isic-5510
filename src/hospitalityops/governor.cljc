@@ -248,6 +248,59 @@
       [{:rule :already-checked-in
         :detail (str subject " は既にチェックイン済み")}])))
 
+(defn- overlaps?
+  "Half-open interval overlap on ISO `YYYY-MM-DD` date strings --
+  lexical comparison is correct for this format. Half-open because a
+  stay checking out on the 3rd frees the room for one checking in on
+  the 3rd."
+  [in-a out-a in-b out-b]
+  (and in-a out-a in-b out-b
+       (pos? (compare out-a in-b))
+       (pos? (compare out-b in-a))))
+
+(defn- room-double-booked-violations
+  "For `:stay/check-in`, refuses to check a guest into a room ANOTHER
+  stay is already occupying over overlapping dates.
+
+  `already-checked-in-violations` only refuses to check in the SAME
+  stay record twice. Nothing prevented two DIFFERENT stays from
+  occupying one room at once: this actor tracked `:property` and
+  `:room` on every stay and never once compared them across stays, so
+  a second guest could be checked into an occupied room and the ledger
+  would record both as clean.
+
+  Ground truth is the other stays' own `:checked-in?`/`:checked-out?`
+  facts and their own dates -- never a proposal's self-report. A stay
+  that cannot be date-checked (either range missing) is NOT silently
+  treated as non-overlapping: an occupied room with unknown dates is a
+  violation, because un-verifiable is not the same as free."
+  [{:keys [op subject]} st]
+  (when (= op :stay/check-in)
+    (let [me (store/stay st subject)
+          others (->> (store/all-stays st)
+                      (remove #(= subject (:id %)))
+                      (filter #(and (= (:property me) (:property %))
+                                    (= (:room me) (:room %))))
+                      (filter #(and (true? (:checked-in? %))
+                                    (not (true? (:checked-out? %))))))
+          undatable (filter #(not (and (:check-in-date %) (:check-out-date %)
+                                       (:check-in-date me) (:check-out-date me)))
+                            others)
+          clashing (filter #(overlaps? (:check-in-date me) (:check-out-date me)
+                                       (:check-in-date %) (:check-out-date %))
+                           others)]
+      (cond
+        (seq clashing)
+        [{:rule :room-double-booked
+          :detail (str (:property me) " " (:room me) " は " (:id (first clashing))
+                       " が滞在中(" (:check-in-date (first clashing)) ".."
+                       (:check-out-date (first clashing)) ") -- 重複するチェックインはできない")}]
+
+        (seq undatable)
+        [{:rule :room-double-booked
+          :detail (str (:property me) " " (:room me) " に滞在中の " (:id (first undatable))
+                       " があるが日程を確定できない -- 空室と断定できないためチェックインしない")}]))))
+
 (defn- already-checked-out-violations
   "For `:stay/check-out`, refuses to check out the SAME stay twice,
   off a dedicated `:checked-out?` fact (never a `:status` value)."
@@ -269,6 +322,7 @@
                            (folio-total-mismatch-violations request st)
                            (guest-disclosure-authorization-unconfirmed-violations request st)
                            (already-checked-in-violations request st)
+                           (room-double-booked-violations request st)
                            (already-checked-out-violations request st)))
         conf (:confidence proposal 0.0)
         low? (< conf confidence-floor)
