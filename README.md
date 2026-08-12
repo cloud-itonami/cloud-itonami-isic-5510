@@ -139,7 +139,20 @@ always routes to a human.
 clojure -M:dev:run     # walk two clean check-in+check-out lifecycles (no disclosure request, disclosure requested-and-authorized), plus four HARD-hold cases, through the actor
 clojure -M:dev:test    # governor contract · phase invariants · store parity · registry conformance · facts coverage
 clojure -M:lint        # clj-kondo (errors fail; CI mirrors this)
+
+# regenerate docs/samples/operator-console.html by REALLY running the actor
+# (23 operations: every one of the governor's 8 hard rules held at least once,
+#  12 escalations approved by a human, 15 commits). Deterministic -- two runs
+#  from the same seed are byte-identical -- and it REFUSES to write a page
+#  whose ledger contains zero :governor-hold facts.
+clojure -M:dev:render-html [out-file]
 ```
+
+The sample console at `docs/samples/operator-console.html` is a build
+artifact, not a mock-up: every stay id, folio number, check-in/check-out
+draft number, hold reason and confidence on that page is output from
+`hospitalityops.operation` running against `hospitalityops.store/seed-db`.
+Do not hand-edit it — regenerate it.
 
 ## Robotics premise
 
