@@ -25,7 +25,7 @@
   operator would keep, not the act of checking a guest in or out itself
   (that is `hospitalityops.operation`'s `:stay/check-in`/`:stay/
   check-out`, always human-gated -- see README `Actuation`)."
-  (:require [clojure.string :as str]
+  (:require [kotoba.lang.text :as str]
             [kotoba.reservation :as res]))
 
 (defn- unsigned-certificate
@@ -109,7 +109,7 @@
     (throw (ex-info "check-in: jurisdiction required" {})))
   (when (< sequence 0)
     (throw (ex-info "check-in: sequence must be >= 0" {})))
-  (let [check-in-number (str (str/upper-case jurisdiction) "-CHI-" (zero-pad sequence 6))
+  (let [check-in-number (str (str/upper jurisdiction) "-CHI-" (zero-pad sequence 6))
         record {"record_id" check-in-number
                 "kind" "check-in-draft"
                 "stay_id" stay-id
@@ -134,7 +134,7 @@
     (throw (ex-info "check-out: jurisdiction required" {})))
   (when (< sequence 0)
     (throw (ex-info "check-out: sequence must be >= 0" {})))
-  (let [check-out-number (str (str/upper-case jurisdiction) "-CHO-" (zero-pad sequence 6))
+  (let [check-out-number (str (str/upper jurisdiction) "-CHO-" (zero-pad sequence 6))
         record {"record_id" check-out-number
                 "kind" "check-out-draft"
                 "stay_id" stay-id
