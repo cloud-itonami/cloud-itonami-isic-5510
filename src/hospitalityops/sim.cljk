@@ -1,5 +1,5 @@
 (ns hospitalityops.sim
-  "Demo driver -- `clojure -M:dev:run`. Walks a clean stay through
+  "Demo driver -- `kbb -M:dev:run`. Walks a clean stay through
   intake -> jurisdiction assessment -> check-in (escalate/approve/
   commit) -> check-out (escalate/approve/commit), then a SEPARATE
   clean disclosure-requested stay through the same lifecycle

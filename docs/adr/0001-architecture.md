@@ -179,7 +179,7 @@ auto-checking a guest in or out).
 - `MemStore` ‖ `DatomicStore` parity is proven by
   `test/hospitalityops/store_contract_test.cljk`.
 - 39 tests / 175 assertions pass; lint is clean; the demo
-  (`clojure -M:dev:run`) walks two clean check-in+check-out lifecycles
+  (`kbb -M:dev:run`) walks two clean check-in+check-out lifecycles
   (no disclosure request, disclosure requested-and-authorized), plus
   four HARD-hold scenarios, end-to-end.
 - `blueprint.edn` needed a genuine field-sync fix this time (a missing
