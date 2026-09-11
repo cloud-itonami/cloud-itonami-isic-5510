@@ -90,7 +90,7 @@ enforce this (`hospitalityops.governor`'s `:actuation/check-in-guest`/
 `:actuation/check-out-guest` high-stakes gate and `hospitalityops.
 phase`'s phase table, which never puts either op in any phase's
 `:auto` set) -- see `hospitalityops.phase`'s docstring and
-`test/hospitalityops/phase_test.clj`'s `stay-check-in-never-auto-at-
+`test/hospitalityops/phase_test.cljk`'s `stay-check-in-never-auto-at-
 any-phase`/`stay-check-out-never-auto-at-any-phase`. The actor may
 draft, check and recommend; a human accommodation operator is always
 the one who actually checks a guest in or out. Grounded directly in
@@ -202,14 +202,14 @@ ruled-out precedent).
 
 | File | Role |
 |---|---|
-| `src/hospitalityops/store.cljc` | **Store** protocol -- `MemStore` ‖ `DatomicStore` (`langchain.db`) + append-only audit ledger + check-in AND check-out history (dual history). The double-actuation guard checks dedicated `:checked-in?`/`:checked-out?` booleans rather than a `:status` value |
-| `src/hospitalityops/registry.cljc` | Check-in/check-out draft records, plus `folio-total-matches-claim?` -- an honest reapplication of the SAME ground-truth-recompute discipline every sibling actor's own cost/total-matching check establishes |
-| `src/hospitalityops/facts.cljc` | Per-jurisdiction accommodation-operations AND guest-registration catalog with an official spec-basis citation per entry, honest coverage reporting -- three of four seeded jurisdictions have a guest-registration sub-citation here (an honest single-jurisdiction gap for the US) |
-| `src/hospitalityops/hospitalityopsllm.cljc` | **HospitalityOps-LLM** -- `mock-advisor` ‖ `llm-advisor`; intake/jurisdiction-assessment/check-in/check-out proposals |
-| `src/hospitalityops/governor.cljc` | **Hospitality Governor** -- 5 HARD checks (spec-basis · evidence-incomplete · guest-registration-incomplete, FLAGSHIP NEW, the 80th unconditional-evaluation-discipline grounding · folio-total-mismatch · guest-disclosure-authorization-unconfirmed, CONDITIONAL, the 81st grounding) + 2 double-actuation guards + 1 soft (confidence/actuation gate) |
-| `src/hospitalityops/phase.cljc` | **Phase 0→3** -- read-only → assisted intake → assisted assess → supervised (check-in/check-out always human; stay intake is the ONLY auto-eligible op, no direct guest-facing risk) |
-| `src/hospitalityops/operation.cljc` | **OperationActor** -- langgraph StateGraph |
-| `src/hospitalityops/sim.cljc` | demo driver |
+| `src/hospitalityops/store.cljk` | **Store** protocol -- `MemStore` ‖ `DatomicStore` (`langchain.db`) + append-only audit ledger + check-in AND check-out history (dual history). The double-actuation guard checks dedicated `:checked-in?`/`:checked-out?` booleans rather than a `:status` value |
+| `src/hospitalityops/registry.cljk` | Check-in/check-out draft records, plus `folio-total-matches-claim?` -- an honest reapplication of the SAME ground-truth-recompute discipline every sibling actor's own cost/total-matching check establishes |
+| `src/hospitalityops/facts.cljk` | Per-jurisdiction accommodation-operations AND guest-registration catalog with an official spec-basis citation per entry, honest coverage reporting -- three of four seeded jurisdictions have a guest-registration sub-citation here (an honest single-jurisdiction gap for the US) |
+| `src/hospitalityops/hospitalityopsllm.cljk` | **HospitalityOps-LLM** -- `mock-advisor` ‖ `llm-advisor`; intake/jurisdiction-assessment/check-in/check-out proposals |
+| `src/hospitalityops/governor.cljk` | **Hospitality Governor** -- 5 HARD checks (spec-basis · evidence-incomplete · guest-registration-incomplete, FLAGSHIP NEW, the 80th unconditional-evaluation-discipline grounding · folio-total-mismatch · guest-disclosure-authorization-unconfirmed, CONDITIONAL, the 81st grounding) + 2 double-actuation guards + 1 soft (confidence/actuation gate) |
+| `src/hospitalityops/phase.cljk` | **Phase 0→3** -- read-only → assisted intake → assisted assess → supervised (check-in/check-out always human; stay intake is the ONLY auto-eligible op, no direct guest-facing risk) |
+| `src/hospitalityops/operation.cljk` | **OperationActor** -- langgraph StateGraph |
+| `src/hospitalityops/sim.cljk` | demo driver |
 | `test/hospitalityops/*_test.clj` | governor contract · phase invariants · store parity · registry conformance · facts coverage |
 
 ## Business-process coverage (honest)

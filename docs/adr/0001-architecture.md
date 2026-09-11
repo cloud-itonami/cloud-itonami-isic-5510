@@ -122,7 +122,7 @@ prior governor's guards establish, informed by
 `hospitalityops.store/Store` is implemented by both `MemStore` (atom-
 backed, default for dev/tests/demo) and `DatomicStore` (`langchain.
 db`-backed), proven to satisfy the same contract in
-`test/hospitalityops/store_contract_test.clj`.
+`test/hospitalityops/store_contract_test.cljk`.
 
 ### Decision 9: no bespoke domain capability lib; a genuine `blueprint.edn` field-sync gap found and fixed
 
@@ -177,7 +177,7 @@ auto-checking a guest in or out).
   unconfirmed?` (81st distinct application overall, the TENTH
   conditional variant).
 - `MemStore` ‖ `DatomicStore` parity is proven by
-  `test/hospitalityops/store_contract_test.clj`.
+  `test/hospitalityops/store_contract_test.cljk`.
 - 39 tests / 175 assertions pass; lint is clean; the demo
   (`clojure -M:dev:run`) walks two clean check-in+check-out lifecycles
   (no disclosure request, disclosure requested-and-authorized), plus
