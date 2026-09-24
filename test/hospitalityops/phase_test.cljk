@@ -2,7 +2,7 @@
   "The phase table as executable tests. The invariant this repo cannot
   regress on: `:stay/check-in`/`:stay/check-out` must NEVER be a
   member of any phase's `:auto` set."
-  (:require [clojure.test :refer [deftest is testing]]
+  (:require [kotoba.test :refer [deftest is testing]]
             [hospitalityops.phase :as phase]))
 
 (deftest stay-check-in-never-auto-at-any-phase
