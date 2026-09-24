@@ -1,5 +1,5 @@
 (ns hospitalityops.registry-test
-  (:require [clojure.test :refer [deftest is testing]]
+  (:require [kotoba.test :refer [deftest is testing]]
             [hospitalityops.registry :as r]))
 
 ;; ----------------------------- folio-total-matches-claim? -----------------------------

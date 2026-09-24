@@ -1,5 +1,5 @@
 (ns hospitalityops.facts-test
-  (:require [clojure.test :refer [deftest is]]
+  (:require [kotoba.test :refer [deftest is]]
             [hospitalityops.facts :as facts]))
 
 (deftest jpn-has-a-spec-basis
