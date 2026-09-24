@@ -1,0 +1,35 @@
+;; What this vertical's robot physically does, declared for
+;; kotoba.robotics.process (kotoba-lang/robotics). `kbb -M:dev:physics` runs it.
+;;
+;; README "Robotics premise": in accommodation (ISIC 5510) a service robot
+;; performs cleaning, restocking and concierge delivery in guest areas,
+;; gated by the independent Hospitality Governor. Physical work modelled
+;; here: a concierge delivery robot carrying guest luggage along the guest
+;; corridor, and a housekeeping arm restocking linen onto the upper shelf of
+;; a floor pantry.
+;;
+;; Every number without a cited source is marked `estimate` in its :basis.
+;; Replacing an estimate with a sourced value is this bot's growth work.
+{:physics/schema "itonami.physical-ai.spec.v1"
+ :repo "cloud-itonami/cloud-itonami-isic-5510"
+ :cases
+ [{:id :luggage-delivery-corridor
+   :kind :transport
+   :procedure "concierge robot carries a guest's luggage 60 m from the lift lobby along the corridor to the room door"
+   :params {:mass-kg 40.0 :distance-m 60.0 :v-max-mps 1.0 :a-max-mps2 0.5
+            :brake-decel-mps2 1.5 :drive-force-n 150.0 :crr 0.02
+            :cog-height-m 0.35 :support-half-length-m 0.20 :payload-cog-height-m 0.90
+            :max-time-s 600.0}
+   :sweep {:param :payload-kg :values [5.0 15.0 30.0 45.0 60.0]}
+   :quantity :min-tipover-margin
+   :limit {:min 0.5 :basis "estimate: keep half the static margin when stopping for a guest who steps into the corridor"}
+   :boundary {:lo 1.0 :hi 150.0}}
+  {:id :linen-restock-shelf
+   :kind :manipulator
+   :procedure "housekeeping arm lifts a bundle of towels/linen from the trolley onto the upper shelf of the floor pantry"
+   :params {:l1-m 0.50 :l2-m 0.45 :m1-kg 5.0 :m2-kg 3.5
+            :from [0.55 0.00] :to [0.25 0.80] :duration-s 2.0 :steps 500}
+   :sweep {:param :payload-kg :values [1.0 3.0 5.0 8.0 12.0]}
+   :quantity :peak-tau1-nm
+   :limit {:max 80.0 :basis "estimate: continuous shoulder torque of a ~5 kg-payload collaborative arm class used near guests"}
+   :boundary {:lo 0.2 :hi 40.0}}]}
