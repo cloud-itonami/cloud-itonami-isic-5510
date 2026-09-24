@@ -51,7 +51,11 @@
 (deftest a-float-total-never-matches-now-that-money-is-integer
   (testing "a residual float claim must not silently pass -- it is a data
             defect the operator has to fix, not a total to accept"
-    (is (not (r/folio-total-matches-claim? {:nights 2 :rate 10000 :claimed-total 20000.0})))))
+    ;; On a JS host (kbb) 20000.0 and 20000 are the same number -- there is
+    ;; no float/integer distinction to test there, so the residual-float
+    ;; claim is expressed with a non-integral float instead.
+    #?(:clj (is (not (r/folio-total-matches-claim? {:nights 2 :rate 10000 :claimed-total 20000.0})))
+       :default (is (not (r/folio-total-matches-claim? {:nights 2 :rate 10000 :claimed-total 20000.5}))))))
 
 ;; ----------------------------- nights derived from dates -----------------------------
 
