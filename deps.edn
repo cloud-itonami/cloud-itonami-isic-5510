@@ -10,27 +10,37 @@
         ;; kotoba.lang.edn replaced clojure.edn here (2026-09-23). An explicit floor:
         ;; tools.deps takes the NEWEST sha it is shown, and kbb resolves git deps
         ;; only from nbb.edn, so every project file this repo has names it.
-        io.github.kotoba-lang/edn {:git/sha "79dba32c8892058842c57783f06a2dfe4601aeb0"}
+        io.github.kotoba-lang/edn
+        {:git/url "https://github.com/kotoba-lang/kotoba.git"
+         :git/sha "7e1dbe0aece831138e6106c59d2b26375d0f60c4"
+         :deps/root "lib/kotoba.edn"}
        ;; kotoba.test (clojure.test-compatible surface), not clojure.test --
         ;; scripts/migrate-clojure-test-to-kotoba-test.cljk. Explicit floor.
-        io.github.kotoba-lang/test {:git/url "https://github.com/kotoba-lang/test.git"
-                                    :git/sha "2ab4885f99fd25552d380d0f6b0b54c5a72eb7ae"}
+        io.github.kotoba-lang/test
+        {:git/url "https://github.com/kotoba-lang/kotoba.git"
+         :git/sha "7e1dbe0aece831138e6106c59d2b26375d0f60c4"
+         :deps/root "lib/kotoba.test"}
         ;; kotoba.robotics.process: the process-physics solvers and probe this
         ;; repo's physics.edn runs on (physical-AI bot, scripts/physical-ai-bots).
-        io.github.kotoba-lang/robotics {:local/root "../../kotoba-lang/robotics"}
+        io.github.kotoba-lang/robotics
+        {:local/root "../../kotoba-lang/kotoba/lib/kotoba.robotics"}
 
         ;; kotoba.lang.text, not clojure.string. Pinned as an explicit floor:
         ;; tools.deps takes the NEWEST sha it is shown, so without a floor here
         ;; this repo silently rides whatever a sibling happens to name.
-        io.github.kotoba-lang/text {:git/sha "73bdb13ae7a3d004b44bca08be03a3191157a38f"}
+        io.github.kotoba-lang/text
+        {:git/url "https://github.com/kotoba-lang/kotoba.git"
+         :git/sha "7e1dbe0aece831138e6106c59d2b26375d0f60c4"
+         :deps/root "lib/kotoba.text"}
        io.github.kotoba-lang/langgraph
-        {:local/root "../../kotoba-lang/langgraph"}
+        {:local/root "../../kotoba-lang/kotoba/lib/kotoba.langgraph"}
         ;; this workspace's base design system -- the operator console
         ;; (`hospitalityops.render-html`) styles itself with the DADS
         ;; compat skin rather than inventing a second design system.
         io.github.kotoba-lang/jp-go-digital-design-system
-        {:git/url "https://github.com/kotoba-lang/jp-go-digital-design-system"
-         :git/sha "83db99546eabc53613ae826ea41d1533a3c574af"}
+        {:git/url "https://github.com/kotoba-lang/kotoba.git"
+         :git/sha "7e1dbe0aece831138e6106c59d2b26375d0f60c4"
+         :deps/root "lib/kotoba.jpGoDigitalDesignSystem"}
         ;; the folio recompute runs on kotoba.reservation's integer money.
         ;; It used to be `(* (double nights) (double rate))` compared with
         ;; `==`, which REJECTED ~19% of correct folios at realistic nightly
@@ -38,7 +48,7 @@
         ;; x $10.00-$499.99) because the product is not representable as a
         ;; double. A guest was told their own correct total did not match.
         io.github.kotoba-lang/reservation
-        {:local/root "../../kotoba-lang/reservation"}}
+        {:local/root "../../kotoba-lang/kotoba/lib/kotoba.reservation"}}
  :aliases
  {
   ;; kbb -M:physics -> the physical-AI bot's measurement: runs physics.edn on
@@ -50,7 +60,7 @@
 ;; offline workspace dev -- pin transitive langchain to local checkout
   :dev {:override-deps
         {io.github.kotoba-lang/langchain
-         {:local/root "../../kotoba-lang/langchain"}}}
+        {:local/root "../../kotoba-lang/kotoba/lib/kotoba.langchain"}}}
   ;; kbb -M:dev:run  -> drive the demo through one OperationActor
   :run {:main-opts ["-m" "hospitalityops.sim"]}
   ;; kbb -M:dev:render-html [out-file] -> regenerate
